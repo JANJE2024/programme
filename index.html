@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Programme Alimentation Alignée</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Montserrat', sans-serif;
+      background: #0f2027;
+      overflow: hidden;
+    }
+
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 2rem;
+    }
+
+    .glass-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(14px);
+      border-radius: 20px;
+      padding: 3rem 2rem;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+      max-width: 450px;
+      width: 100%;
+      animation: fadeSlideIn 1.2s ease-out forwards;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #e0f2f1;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 10px #64dfdf;
+    }
+
+    button {
+      background: linear-gradient(135deg, #64dfdf, #52b788);
+      color: #fff;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(100, 223, 223, 0.5);
+      transition: all 0.4s ease;
+    }
+
+    button:hover {
+      box-shadow: 0 0 25px rgba(100, 223, 223, 0.8);
+      transform: scale(1.05);
+    }
+
+    .code-section {
+      display: none;
+      flex-direction: column;
+      margin-top: 2rem;
+      animation: fadeIn 0.8s ease forwards;
+    }
+
+    input[type="password"] {
+      padding: 0.9rem 1rem;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      width: 100%;
+      max-width: 300px;
+      margin: auto;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      outline: none;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input[type="password"]:focus {
+      box-shadow: 0 0 10px #64dfdf;
+    }
+
+    .error {
+      color: #ffb3b3;
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      button {
+        font-size: 1rem;
+      }
+
+      input[type="password"] {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="particles-js"></div>
+
+  <div class="container">
+    <div class="glass-box">
+      <h1>Programme<br>Alimentation Alignée</h1>
+      <button onclick="showCode()">Accéder au programme</button>
+
+      <div class="code-section" id="codeSection">
+        <input type="password" id="accessCode" placeholder="Entrer le code secret">
+        <button onclick="checkCode()">Valider</button>
+        <div class="error" id="errorMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showCode() {
+      document.getElementById('codeSection').style.display = 'flex';
+    }
+
+    function checkCode() {
+      const inputCode = document.getElementById('accessCode').value.trim();
+      const correctCode = "PAA2025";
+      if (inputCode === correctCode) {
+        window.location.href = "programme.html";
+      } else {
+        document.getElementById('errorMsg').textContent = "Code incorrect. Veuillez réessayer.";
+      }
+    }
+  </script>
+
+  <!-- Particles.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS("particles-js", {
+      "particles": {
+        "number": { "value": 50 },
+        "color": { "value": "#64dfdf" },
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.3 },
+        "size": { "value": 3 },
+        "line_linked": {
+          "enable": true,
+          "distance": 120,
+          "color": "#64dfdf",
+          "opacity": 0.4,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 2,
+          "direction": "none",
+          "random": false,
+          "straight": false,
+          "bounce": false
+        }
+      },
+      "interactivity": {
+        "events": {
+          "onhover": { "enable": true, "mode": "repulse" },
+          "onclick": { "enable": true, "mode": "push" }
+        },
+        "modes": {
+          "repulse": { "distance": 80 },
+          "push": { "particles_nb": 4 }
+        }
+      },
+      "retina_detect": true
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Test Nutrigenomique</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 40px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 640px;
+      border-top: 6px solid #059669;
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #059669;
+    }
+
+    p {
+      font-size: 16px;
+      color: #374151;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    label {
+      font-size: 15px;
+      color: #1f2937;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: #059669;
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    .top-return {
+      display: block;
+      margin-bottom: 20px;
+      text-decoration: none;
+      color: #059669;
+      font-weight: bold;
+    }
+
+    .question-slide {
+      position: relative;
+      min-height: 180px;
+    }
+
+    .slide-question {
+      position: absolute;
+      width: 100%;
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .slide-in-left {
+      transform: translateX(-100%);
+      opacity: 1;
+    }
+
+    .slide-in-right {
+      transform: translateX(100%);
+      opacity: 1;
+    }
+
+    .active {
+      transform: translateX(0);
+      opacity: 1;
+      z-index: 2;
+    }
+
+    #result {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .translation {
+      font-size: 14px;
+      color: #6b7280;
+      font-style: italic;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="module1.html" class="top-return">← Retour à l'accueil</a>
+    <h2>Test Nutrigenomique</h2>
+
+    <div class="question-slide" id="question-slide"></div>
+
+    <div class="button-row" id="navigation-buttons">
+      <button id="prevBtn" class="btn-secondary" onclick="changeQuestion(-1)">Retour</button>
+      <button id="nextBtn" class="btn-primary" onclick="changeQuestion(1)">Suivant</button>
+    </div>
+
+    <div id="result">
+      <h3>Résultat</h3>
+      <p id="resultText"></p>
+
+      <label for="facebook">Anaran'ny Facebook-nao :</label>
+      <input type="text" id="facebook" placeholder="Nom Facebook complet" />
+
+      <p style="margin-top: 10px; font-weight: bold;">Captureo ity valiny ity dia alefaso ao am Joela.</p>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      ["1. Avez-vous des membres de votre famille proches ayant du diabète, du surpoids ou de l’hypertension ?", "Manana fianakaviana akaiky voan'ny diabeta, matavy loatra, na ambony tosidra ve ianao ?"],
+      ["2. Avez-vous tendance à prendre du poids facilement malgré un régime équilibré ?", "Mora mahazo lanja  ve ianao na dia mihinana ara-dalàna aza ?"],
+      ["3. Avez-vous des effets indésirables après la consommation de café, thé vert ou chocolat (nervosité, palpitations) ?", "Misy fiatraikany amin'ny vatanao ve rehefa misotro kafe, dite maitso, na mihinana sôkôla(kizitina,palpitation) ?"],
+      ["4. Avez-vous déjà eu des réactions à certains additifs ou conservateurs alimentaires ?", "Efa nisy fiatraikany ratsy ve ny vatanao tamin’ny sakafo misy additive na aminy boite ?"],
+      ["5. Votre niveau d’énergie chute-t-il rapidement après des repas riches en glucides ?", "Mihena haingana ve ny herinao rehefa avy mihinana sakafo be glucide ?"],
+      ["6. Avez-vous déjà ressenti une amélioration marquée de votre santé après avoir adapté votre alimentation ?", "Efa nisy fiovana tsara be ve ny fahasalamanao rehefa nanova fomba fihinanana ?"],
+      ["7. Avez-vous du mal à métaboliser certains médicaments (effets secondaires prononcés ou manque d’efficacité) ?", "Sarotra ve ny fandevonan’ny vatanao fanafody sasany (mampiseho fiantraikany ratsy be sa tsy mandaitra) ?"],
+      ["8. Avez-vous des problèmes digestifs après des produits laitiers ou le gluten ?", "Manana olana amin’ny fandevonan-kanina ve ianao rehefa mihinana ronono na gluten ?"],
+      ["9. Avez-vous des antécédents de troubles inflammatoires ou auto-immuns ?", "Nisy aretina inflammation(ratra anaty) na auto-immune ve tany aloha ?"],
+      ["10. Vos performances physiques ou cognitives varient-elles fortement selon votre alimentation ?", "Miova be ve ny herinao na ny fahafahanao mieritreritra arakaraka ny sakafo ?"],
+      ["11. Avez-vous des troubles du sommeil liés à des repas tardifs ou lourds ?", "Manana olana amin’ny torimaso ve ianao rehefa mihinana tara na sakafo mavesatra ?"],
+      ["12. Êtes-vous sensible aux régimes riches en graisses saturées ou pauvres en fibres ?", "Mora voakasiky ny sakafo be tavy sy tsy misy fibre ve ianao ?"],
+      ["13. Avez-vous déjà fait des tests ADN ou hésitez-vous à en faire pour mieux comprendre votre santé ?", "Efa nanao fitsapana ADN ve ianao sa misalasala hanao izany mba hahafantarana tsara ny fahasalamanao ?"],
+      ["14. Avez-vous des carences en vitamines ou minéraux malgré une alimentation variée ?", "Manana tsy fahampiana vitamine sy mineraly  ve ianao na dia mihinana sakafo isan-karazany aza ?"],
+      ["15. Vos réactions aux régimes populaires sont-elles souvent différentes de la majorité des gens ?", "tsy mitovy amin'ny akabeazan'ny olona ve ny vokatra hitanao rehefa ianao no mampiatra lay regimes malaza be ?"]
+    ];
+
+    let current = 0;
+    const answers = [];
+    const slideContainer = document.getElementById("question-slide");
+
+    function createSlide(index, direction) {
+      const question = document.createElement("div");
+      question.className = "slide-question";
+
+      question.innerHTML = `
+        <p>${questions[index][0]}</p>
+        <p class="translation">${questions[index][1]}</p>
+        <div class="radio-group">
+          <label><input type="radio" name="answer" value="oui"> Oui</label>
+          <label><input type="radio" name="answer" value="non"> Non</label>
+          <label><input type="radio" name="answer" value="parfois"> Parfois</label>
+        </div>
+      `;
+
+      if (direction === 1) {
+        question.classList.add("slide-in-right");
+      } else {
+        question.classList.add("slide-in-left");
+      }
+
+      slideContainer.innerHTML = '';
+      slideContainer.appendChild(question);
+
+      const prevAnswer = answers[index];
+      if (prevAnswer) {
+        setTimeout(() => {
+          const input = question.querySelector(`input[value="${prevAnswer}"]`);
+          if (input) input.checked = true;
+        }, 50);
+      }
+
+      setTimeout(() => {
+        question.classList.remove("slide-in-left", "slide-in-right");
+        question.classList.add("active");
+      }, 20);
+
+      updateButtons();
+    }
+
+    function changeQuestion(direction) {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      if (direction === 1 && !selected) {
+        alert("Veuillez choisir une réponse.");
+        return;
+      }
+
+      if (direction === 1) answers[current] = selected.value;
+      current += direction;
+
+      if (current >= questions.length) {
+        showResult();
+      } else {
+        createSlide(current, direction);
+      }
+    }
+
+    function updateButtons() {
+      document.getElementById('prevBtn').style.display = current === 0 ? 'none' : 'inline-block';
+      document.getElementById('nextBtn').innerText = current === questions.length - 1 ? 'Voir le résultat' : 'Suivant';
+    }
+
+    function showResult() {
+      document.getElementById("question-slide").style.display = "none";
+      document.getElementById("navigation-buttons").style.display = "none";
+      document.getElementById("result").style.display = "block";
+
+      const ouiCount = answers.filter(a => a === 'oui').length;
+      let resultText = "";
+
+      if (ouiCount >= 10) {
+        resultText = "Votre profil suggère une forte influence génétique sur votre métabolisme. Une approche nutrigénomique serait très utile.";
+      } else if (ouiCount >= 5) {
+        resultText = "Certains aspects de votre profil indiquent une influence génétique modérée sur votre nutrition.";
+      } else {
+        resultText = "Votre métabolisme semble peu affecté par des facteurs génétiques. L'alimentation classique semble bien fonctionner.";
+      }
+
+      document.getElementById("resultText").innerText = resultText;
+    }
+
+    createSlide(current, 1);
+  </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modules - Alimentation Alignée</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 2.5rem;
+      letter-spacing: 1px;
+    }
+
+    .modules-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .module-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      backdrop-filter: blur(8px);
+      transition: all 0.35s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .module-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .module-image {
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .module-info {
+      flex-grow: 1;
+    }
+
+    .module-info h2 {
+      font-size: 1.2rem;
+      margin: 0 0 5px;
+      color: #f8f8f8;
+    }
+
+    .module-info p {
+      font-size: 0.9rem;
+      margin: 0;
+      color: #cfcfcf;
+    }
+
+    .module-icon {
+      font-size: 1.6rem;
+      color: #fff;
+      transition: transform 0.3s ease;
+    }
+
+    .module-card:hover .module-icon {
+      transform: scale(1.15);
+    }
+
+    .locked {
+      cursor: not-allowed;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .unlocked {
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .module-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .module-image {
+        width: 100%;
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Modules du Programme</h1>
+
+  <div class="modules-container">
+
+    <!-- Module 1 - accessible -->
+    <div class="module-card unlocked" onclick="location.href='module1.html'">
+      <img src="https://images.unsplash.com/photo-1588776814546-d88a959f7137?fit=crop&w=400&q=80" alt="Profil biologique" class="module-image">
+      <div class="module-info">
+        <h2>Module 1</h2>
+        <p>Inona ny profil biologique-ako sy ny profil metabolique-ako.</p>
+      </div>
+      <i class="fas fa-unlock module-icon"></i>
+    </div>
+
+    <!-- Module 2 - verrouillé -->
+    <div class="module-card locked">
+      <img src="https://images.unsplash.com/photo-1506807803488-8eafc15323a7?fit=crop&w=400&q=80" alt="Chrono-nutrition" class="module-image">
+      <div class="module-info">
+        <h2>Module 2</h2>
+        <p>Les bases de la chrono-nutrition alignée à ton énergie.</p>
+      </div>
+      <i class="fas fa-lock module-icon"></i>
+    </div>
+
+    <!-- Module 3 - verrouillé -->
+    <div class="module-card locked">
+      <img src="https://images.unsplash.com/photo-1572441710531-00694d1e7e48?fit=crop&w=400&q=80" alt="Plan alimentaire" class="module-image">
+      <div class="module-info">
+        <h2>Module 3</h2>
+        <p>Créer ton plan alimentaire thérapeutique personnalisé.</p>
+      </div>
+      <i class="fas fa-lock module-icon"></i>
+    </div>
+
+    <!-- Module BONUS - verrouillé -->
+    <div class="module-card locked">
+      <img src="https://images.unsplash.com/photo-1601758123927-198078c0c75b?fit=crop&w=400&q=80" alt="Sommeil optimal" class="module-image">
+      <div class="module-info">
+        <h2>Module BONUS</h2>
+        <p>Programme Sommeil Optimal</p>
+      </div>
+      <i class="fas fa-lock module-icon"></i>
+    </div>
+
+  </div>
+
+</body>
+</html>

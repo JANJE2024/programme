@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Test Intolérance Alimentaire</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 40px 0;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 40px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 700px;
+      border-top: 6px solid #d97706;
+    }
+    h2, h3 {
+      text-align: center;
+      color: #d97706;
+    }
+    p {
+      font-size: 16px;
+      color: #374151;
+    }
+    .radio-group {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 20px;
+    }
+    .radio-group label {
+      font-size: 16px;
+      color: #1f2937;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 60px;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn-primary {
+      background-color: #d97706;
+      color: white;
+    }
+    .btn-secondary {
+      background-color: #fef3c7;
+      color: #78350f;
+    }
+    #result {
+      display: none;
+      margin-top: 30px;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .score {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Test Intolérance Alimentaire</h2>
+    <div id="quiz">
+      <div class="question">
+        <p id="questionText"></p>
+        <p><em id="questionMalagasy"></em></p>
+        <div class="radio-group">
+          <label><input type="radio" name="answer" value="oui"> Oui</label>
+          <label><input type="radio" name="answer" value="non"> Non</label>
+          <label><input type="radio" name="answer" value="parfois"> Parfois</label>
+        </div>
+      </div>
+      <div class="button-row">
+        <button class="btn-secondary" id="prevBtn" onclick="prevQuestion()">Retour</button>
+        <button class="btn-primary" id="nextBtn" onclick="nextQuestion()">Suivant</button>
+      </div>
+    </div>
+
+    <div id="result">
+      <h3>Résultat</h3>
+      <p id="scoreText"></p>
+      <p class="score" id="interpretation"></p>
+      <label for="facebook">Anaran'ny Facebook-nao :</label>
+      <input type="text" id="facebook" placeholder="Nom Facebook complet" />
+      <p style="margin-top: 10px; font-weight: bold;">Captureo ity valiny ity dia alefaso ao am Joela.</p>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { fr: "1. Avez-vous souvent des ballonnements après les repas ?", mg: "Mahatsapa misy rivotra matetika ve ianao aorian'ny sakafo ?" },
+      { fr: "2. Ressentez-vous des douleurs digestives après certains aliments ?", mg: "Mahatsiaro fanaintainana ve ianao rehefa avy mihinana sakafo sasany ?" },
+      { fr: "3. Avez-vous des maux de tête fréquents sans cause apparente ?", mg: "Manana aretin-doha matetika ve ianao nefa tsy mazava ny antony ?" },
+      { fr: "4. Avez-vous des éruptions cutanées ou démangeaisons après les repas ?", mg: "Miseho fery na mangidihidy hoditra ve ianao rehefa avy mihinana ?" },
+      { fr: "5. Vous sentez-vous souvent fatigué après avoir mangé ?", mg: "Mahatsapa reraka ve ianao rehefa avy mihinana ?" },
+      { fr: "6. Avez-vous des problèmes de transit intestinal (constipation ou diarrhée) ?", mg: "Manana olana amin’ny fandehanan’ny tsinay ve ianao (fivalanana na fitohanana ?) ?" },
+      { fr: "7. Avez-vous des douleurs articulaires sans raison précise ?", mg: "Mahatsiaro fanaintainana amin’ny tonon-taolana ve ianao nefa tsy mazava ny antony ?" },
+      { fr: "8. Vous sentez-vous ballonné même sans avoir beaucoup mangé ?", mg: "Mahatsapa misilisy rivotra anaty kibo ve ianao na dia tsy be sakafo aza ?" },
+      { fr: "9. Avez-vous des nausées après certains aliments ?", mg: "Mahatsiaro marary kibo ve ianao rehefa avy mihinana sakafo sasany ?" },
+      { fr: "10. Avez-vous du mal à vous concentrer après les repas ?", mg: "Manana fahasahiranana mifantoka ve ianao rehefa avy mihinana ?" },
+      { fr: "11. Avez-vous une mauvaise haleine persistante ?", mg: "Manana fofona ratsy amin’ny vava ve ianao na dia manasa vava tsara aza ?" },
+      { fr: "12. Avez-vous des douleurs abdominales sans cause connue ?", mg: "Mahatsiaro fanaintainana amin’ny kibo ve ianao nefa tsy mazava ny antony ?" },
+      { fr: "13. Vos yeux sont-ils souvent rouges ou irrités ?", mg: "Mena na mivonto matetika ve ny masonao ?" },
+      { fr: "14. Avez-vous souvent le nez bouché ou qui coule ?", mg: "Voasakana na mitete matetika ve ny oronao ?" },
+      { fr: "15. Avez-vous souvent des reflux acides ?", mg: "Misondrovaka na mahatsapa fiverenan'ny asidra avy amin’ny vavony ve ianao ?" }
+    ];
+
+    let current = 0;
+    let answers = [];
+
+    function loadQuestion() {
+      document.getElementById("questionText").textContent = questions[current].fr;
+      document.getElementById("questionMalagasy").textContent = questions[current].mg;
+
+      const radios = document.querySelectorAll('input[name="answer"]');
+      radios.forEach(r => r.checked = false);
+
+      if (answers[current]) {
+        const selectedRadio = document.querySelector(`input[name="answer"][value="${answers[current]}"]`);
+        if (selectedRadio) selectedRadio.checked = true;
+      }
+
+      document.getElementById("prevBtn").style.display = current === 0 ? "none" : "inline-block";
+      document.getElementById("nextBtn").textContent = current === questions.length - 1 ? "Terminer" : "Suivant";
+    }
+
+    function nextQuestion() {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      if (!selected) {
+        alert("Veuillez choisir une réponse.");
+        return;
+      }
+
+      answers[current] = selected.value;
+
+      if (current < questions.length - 1) {
+        current++;
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function prevQuestion() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    function calculateScore() {
+      let score = 0;
+      for (const answer of answers) {
+        if (answer === "oui") score += 2;
+        else if (answer === "parfois") score += 1;
+      }
+      return score;
+    }
+
+    function interpretScore(score) {
+      if (score >= 25) {
+        return "Vous présentez de nombreux signes d’intolérance alimentaire. Une consultation personnalisée est fortement recommandée.";
+      } else if (score >= 15) {
+        return "Il y a plusieurs signaux d’intolérance. Il serait judicieux d’explorer votre alimentation et votre digestion.";
+      } else if (score >= 5) {
+        return "Quelques signes apparaissent. Vous pouvez commencer par observer les effets de certains aliments.";
+      } else {
+        return "Peu de signes détectés. Votre digestion semble globalement équilibrée.";
+      }
+    }
+
+    function showResult() {
+      const score = calculateScore();
+      const interpretation = interpretScore(score);
+
+      document.getElementById("quiz").style.display = "none";
+      document.getElementById("result").style.display = "block";
+      document.getElementById("scoreText").textContent = `Votre score est de ${score} sur 30.`;
+      document.getElementById("interpretation").textContent = interpretation;
+    }
+
+    window.onload = loadQuestion;
+  </script>
+</body>
+</html>

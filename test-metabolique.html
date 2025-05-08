@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Test William Wolcott</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 40px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 640px;
+      overflow: hidden;
+      position: relative;
+      border-top: 6px solid #1e3a8a;
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #1e3a8a;
+    }
+
+    p {
+      font-size: 16px;
+      color: #374151;
+    }
+
+    .radio-group {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      font-size: 15px;
+      color: #1f2937;
+    }
+
+    .radio-group input[type="radio"] {
+      margin-right: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: #1e3a8a;
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: #e0e7ff;
+      color: #1e3a8a;
+    }
+
+    .top-return {
+      display: block;
+      margin-bottom: 20px;
+      text-decoration: none;
+      color: #1e3a8a;
+      font-weight: bold;
+    }
+
+    .question-slide {
+      position: relative;
+      min-height: 200px;
+      overflow: hidden;
+    }
+
+    .slide-question {
+      position: absolute;
+      width: 100%;
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .slide-in-left {
+      transform: translateX(-100%);
+      opacity: 1;
+    }
+
+    .slide-in-right {
+      transform: translateX(100%);
+      opacity: 1;
+    }
+
+    .active {
+      transform: translateX(0);
+      opacity: 1;
+      z-index: 2;
+    }
+
+    #result {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .lang-switch {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .lang-switch button {
+      margin: 0 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="module1.html" class="top-return">← Retour à l'accueil</a>
+    <h2>Test de profil métabolique</h2>
+
+    <div class="lang-switch">
+      <button onclick="switchLang('fr')" class="btn-secondary">Français</button>
+      <button onclick="switchLang('mg')" class="btn-secondary">Malagasy</button>
+    </div>
+
+    <div class="question-slide" id="question-slide"></div>
+
+    <div class="button-row" id="navigation-buttons">
+      <button id="prevBtn" class="btn-secondary" onclick="changeQuestion(-1)">Retour</button>
+      <button id="nextBtn" class="btn-primary" onclick="changeQuestion(1)">Suivant</button>
+    </div>
+
+    <div id="result">
+      <h3>Résultat</h3>
+      <p id="resultText"></p>
+
+      <label for="facebook">Anaran'ny Facebook-nao :</label>
+      <input type="text" id="facebook" placeholder="Nom Facebook complet" />
+
+      <p style="margin-top: 10px; font-weight: bold;">Captureo ity valiny ity dia alefaso ao am Joela.</p>
+    </div>
+  </div>
+
+  <script>
+    let lang = "fr";
+
+    const questions = {
+      fr: [
+        "1. Ressentez-vous une sensation de faim intense moins de trois heures après un repas riche en glucides ?",
+        "2. Lorsque vous sautez un repas, avez-vous des symptômes comme des tremblements ou une baisse de concentration ?",
+        "3. Préférez-vous instinctivement les viandes rouges et les aliments salés plutôt que sucrés ?",
+        "4. Vous sentez-vous plus énergique après un repas riche en protéines et graisses ?",
+        "5. Avez-vous souvent des fringales d’aliments salés ou gras ?",
+        "6. Avez-vous des troubles digestifs après un repas sucré ou riche en glucides ?",
+        "7. Ressentez-vous une somnolence après un repas à base de glucides ?",
+        "8. En période de stress, cherchez-vous des aliments riches en protéines comme du fromage ou de la viande ?",
+        "9. Avez-vous un fort appétit dès le matin, rendant le petit-déjeuner indispensable ?",
+        "10. Avez-vous du mal à perdre du poids malgré des régimes faibles en calories ?",
+        "11. Vous sentez-vous mieux après avoir consommé des graisses saines (avocat, poisson gras...) ?",
+        "12. Êtes-vous plus concentré après avoir mangé des protéines animales ?",
+        "13. Avez-vous du mal à être rassasié après un repas faible en protéines ?",
+        "14. Vos performances chutent-elles lorsque vous consommez peu de protéines pendant plusieurs jours ?",
+        "15. Avez-vous des troubles du sommeil ou de l’humeur en cas de faible consommation de graisses animales ?"
+      ],
+      mg: [
+        "1. Mahatsapa hanoanana mafy ve ianao latsaky ny 3 ora taorian’ny sakafo be glucide ?",
+        "2. Rehefa tsy misakafo ianao, mahatsapa fangovitana sa very fifantohana ?",
+        "3. Misafidy hena mena sy sakafo masira ve ianao noho ny mamy ?",
+        "4. Mahatsapa mahazo hery kokoa ve ianao rehefa avy nihinana proteinina sy sakafo matavy ?",
+        "5. Matetika ve ianao maniry sakafo masira na matavy ?",
+        "6. Manana olana amin’ny fandevonan-kanina ve ianao rehefa avy nihinana sakafo mamy na be glucide ?",
+        "7. Mahatsiaro torimaso ve ianao rehefa avy nihinana glucide ?",
+        "8. Amin’ny fotoana manahirana, mitady sakafo misy proteinina toy ny fromazy ve ianao ?",
+        "9. Mahatsapa faniriana te hisakafo be ve ianao amin’ny maraina ka tsy mety aminao rah tsy misakafo maraina ?",
+        "10. Sarotra ho anao ve ny mampihena lanja na dia mihinana kely aza ?",
+        "11. Mahatsapa ao tsara ve ianao rehefa mihinana tavy mahasalama (avocat, trondro matavy...) ?",
+        "12. Mifantoka tsara kokoa ve ianao rehefa avy nihinana proteinina avy amin’ny biby ?",
+        "13. Tsy afa-po ve ianao rehefa sakafo tsy dia misy proteinina no haninao ?",
+        "14. Mihena ve ny performance anao rehefa tsy mihinana proteinina ianao mandritra ny andro maromaro ?",
+        "15. Manana olana amin’ny torimaso na toe-po ve ianao rehefa tsy mihinana tavy avy amin’ny biby ?"
+      ]
+    };
+
+    let current = 0;
+    const answers = [];
+
+    const slideContainer = document.getElementById("question-slide");
+
+    function createSlide(index, direction) {
+      const question = document.createElement("div");
+      question.className = "slide-question";
+      question.innerHTML = `
+        <p>${questions[lang][index]}</p>
+        <div class="radio-group">
+          <label><input type="radio" name="answer" value="0"> Non</label>
+          <label><input type="radio" name="answer" value="1"> Parfois</label>
+          <label><input type="radio" name="answer" value="2"> Oui</label>
+        </div>
+      `;
+
+      if (direction === 1) {
+        question.classList.add("slide-in-right");
+      } else if (direction === -1) {
+        question.classList.add("slide-in-left");
+      }
+
+      slideContainer.innerHTML = '';
+      slideContainer.appendChild(question);
+
+      const prevAnswer = answers[index];
+      if (prevAnswer !== undefined) {
+        setTimeout(() => {
+          const input = question.querySelector(`input[value="${prevAnswer}"]`);
+          if (input) input.checked = true;
+        }, 50);
+      }
+
+      setTimeout(() => {
+        question.classList.remove("slide-in-left", "slide-in-right");
+        question.classList.add("active");
+      }, 20);
+
+      updateButtons();
+    }
+
+    function changeQuestion(direction) {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      if (direction === 1 && !selected) {
+        alert("Veuillez choisir une réponse.");
+        return;
+      }
+
+      if (direction === 1) answers[current] = selected.value;
+      current += direction;
+
+      if (current >= questions[lang].length) {
+        showResult();
+      } else {
+        createSlide(current, direction);
+      }
+    }
+
+    function updateButtons() {
+      document.getElementById('prevBtn').style.display = current === 0 ? 'none' : 'inline-block';
+      document.getElementById('nextBtn').innerText = current === questions[lang].length - 1 ? 'Voir le résultat' : 'Suivant';
+    }
+
+    function showResult() {
+      document.getElementById("question-slide").style.display = "none";
+      document.getElementById("navigation-buttons").style.display = "none";
+      document.getElementById("result").style.display = "block";
+
+      const score = answers.reduce((acc, val) => acc + parseInt(val), 0);
+      let resultText = "";
+
+      if (score >= 25) {
+        resultText = "Vous avez un métabolisme PROTÉIQUE dominant.";
+      } else if (score >= 15) {
+        resultText = "Vous avez un métabolisme MIXTE.";
+      } else {
+        resultText = "Vous avez un métabolisme GLUCIDIQUE dominant.";
+      }
+
+      document.getElementById("resultText").innerText = resultText;
+    }
+
+    function switchLang(newLang) {
+      lang = newLang;
+      createSlide(current, 1);
+    }
+
+    createSlide(current, 1);
+  </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Test Tempérament Hippocratique</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 40px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 640px;
+      position: relative;
+      border-top: 6px solid #9d174d;
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #9d174d;
+    }
+
+    .radio-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    .radio-group label {
+      font-size: 15px;
+      color: #374151;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: #9d174d;
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: #ffe4e6;
+      color: #9d174d;
+    }
+
+    .top-return {
+      display: block;
+      margin-bottom: 20px;
+      text-decoration: none;
+      color: #9d174d;
+      font-weight: bold;
+    }
+
+    .question-slide {
+      position: relative;
+      min-height: 180px;
+      overflow: hidden;
+    }
+
+    .slide-question {
+      position: absolute;
+      width: 100%;
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .slide-in-left {
+      transform: translateX(-100%);
+      opacity: 1;
+    }
+
+    .slide-in-right {
+      transform: translateX(100%);
+      opacity: 1;
+    }
+
+    .active {
+      transform: translateX(0);
+      opacity: 1;
+      z-index: 2;
+    }
+
+    #result {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #languageSwitch {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #9d174d;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="module1.html" class="top-return">← Retour à l'accueil</a>
+    <h2>Test du Tempérament Hippocratique</h2>
+
+    <!-- Language Switch Button -->
+    <button id="languageSwitch">Switch to Malagasy</button>
+
+    <div class="question-slide" id="question-slide"></div>
+
+    <div class="button-row" id="navigation-buttons">
+      <button id="prevBtn" class="btn-secondary" onclick="changeQuestion(-1)">Retour</button>
+      <button id="nextBtn" class="btn-primary" onclick="changeQuestion(1)">Suivant</button>
+    </div>
+
+    <div id="result">
+      <h3>Résultat</h3>
+      <p id="resultText"></p>
+      <label for="facebook">Anaran'ny Facebook-nao :</label>
+      <input type="text" id="facebook" placeholder="Nom Facebook complet" />
+      <p style="margin-top: 10px; font-weight: bold;">Captureo ity valiny ity dia alefaso ao am Joela.</p>
+    </div>
+  </div>
+
+  <script>
+    let currentLanguage = 'fr';
+
+    const questionsFr = [
+      "1. Êtes-vous de nature optimiste, sociable et enthousiaste dans la majorité des situations ?",
+      "2. Réagissez-vous fortement au stress par de la colère ou de l’irritation, mais avec une grande capacité à rebondir ?",
+      "3. Préférez-vous l’action à la réflexion, quitte à agir sans trop planifier ?",
+      "4. Avez-vous tendance à vouloir diriger, organiser ou contrôler votre environnement ?",
+      "5. Ressentez-vous souvent une énergie physique importante, accompagnée d’un sommeil court mais réparateur ?",
+      "6. Vous arrive-t-il de beaucoup parler, gesticuler et facilement attirer l’attention ?",
+      "7. Est-ce que vous ressentez souvent de la mélancolie, de la solitude, ou une hypersensibilité émotionnelle ?",
+      "8. Avez-vous des difficultés à lâcher prise ou à oublier les injustices ou critiques ?",
+      "9. Votre énergie est-elle plutôt lente à démarrer mais régulière et endurante dans la durée ?",
+      "10. Préférez-vous les routines, la tranquillité, les environnements calmes et familiers ?",
+      "11. Réagissez-vous lentement mais durablement au stress ou aux conflits ?",
+      "12. Avez-vous une forte tendance à analyser les situations avant de prendre une décision ?",
+      "13. Êtes-vous perçu(e) comme posé(e), calme, patient(e), voire un peu lent(e) ?",
+      "14. Prenez-vous votre temps pour vous engager émotionnellement, mais êtes très fidèle une fois engagé ?",
+      "15. Est-ce que vos proches vous trouvent de bon conseil et digne de confiance en cas de problème ?"
+    ];
+
+    const questionsMg = [
+      "1. Manana toetra misy fanantenana, tia mifandray, ve ianao amin'ny ankamaroan'ny toe-javatra misy ?",
+      "2. Rehefa misy zavatra manahirana ve dia mora tezitra kokoa ianao  ?",
+      "3. Ianao ve ilay olona tsy tia mandinika be loatra fa tonga dia mihetsika avy hatrany ?",
+      "4. Manana faniriana te hitondra handamina sy hifehy ny tontolo manodidina ve ianao ?",
+      "5. Mety hahatsapa hery ara-batana arahina torimaso fohy ve ianao ?",
+      "6. ianao ve ilay olona tia miteny be sy mora manintona ny olona ?",
+      "7. ianao ve ilay manana fahatsapana ho irery sy somary be fihetsehampo iny ?",
+      "8. ianao ve ilay manana fahasarotana hanadino zavatra manahirana sy ireo kihana nataon'ny hafa taminao ?",
+      "9. somary elaela ianao vao manana hery fa rehefa manao zavatra dia mahavita miaritra ela?",
+      "10. tia mametraka fandaminana sy tontolo feno fitoniana ve ianao ?",
+      "11. miadana nefa maharitra ve ianaomanoloana ny aditsaina sy ny ady  ?",
+      "12. ianao ve ilay mananatoetra tia mandinika sy mamakafaka be alohan'ny hanapahana hevitra ?",
+      "13. Manana toetra tony ,mahritra sy miadana kokoa ve ianao ?",
+      "14. Somary mila fotoana ianao vao mahavita manakimpo kanefa tena mahatoky kosa rehefa tafiditra(zavatra hatao...) ?",
+      "15. olona azo hahatokisana ve ny fahahitan'ny manodinana anao  ?"
+    ];
+
+    let questions = questionsFr;
+    let current = 0;
+    const answers = [];
+
+    const slideContainer = document.getElementById("question-slide");
+
+    function createSlide(index, direction) {
+      const question = document.createElement("div");
+      question.className = "slide-question";
+      question.innerHTML = `
+        <p>${questions[index]}</p>
+        <div class="radio-group">
+          <label><input type="radio" name="answer" value="oui"> Oui</label>
+          <label><input type="radio" name="answer" value="non"> Non</label>
+          <label><input type="radio" name="answer" value="parfois"> Parfois</label>
+        </div>
+      `;
+
+      if (direction === 1) {
+        question.classList.add("slide-in-right");
+      } else if (direction === -1) {
+        question.classList.add("slide-in-left");
+      }
+
+      slideContainer.innerHTML = '';
+      slideContainer.appendChild(question);
+
+      const prevAnswer = answers[index];
+      if (prevAnswer) {
+        setTimeout(() => {
+          const input = question.querySelector(`input[value="${prevAnswer}"]`);
+          if (input) input.checked = true;
+        }, 50);
+      }
+
+      setTimeout(() => {
+        question.classList.remove("slide-in-left", "slide-in-right");
+        question.classList.add("active");
+      }, 20);
+
+      updateButtons();
+    }
+
+    function changeQuestion(direction) {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      if (direction === 1 && !selected) {
+        alert("Veuillez choisir une réponse.");
+        return;
+      }
+
+      if (direction === 1) answers[current] = selected.value;
+      current += direction;
+
+      if (current >= questions.length) {
+        showResult();
+      } else {
+        createSlide(current, direction);
+      }
+    }
+
+    function updateButtons() {
+      document.getElementById('prevBtn').style.display = current === 0 ? 'none' : 'inline-block';
+      document.getElementById('nextBtn').innerText = current === questions.length - 1 ? 'Voir le résultat' : 'Suivant';
+    }
+
+    function showResult() {
+      document.getElementById("question-slide").style.display = "none";
+      document.getElementById("navigation-buttons").style.display = "none";
+      document.getElementById("result").style.display = "block";
+
+      const count = {
+        sanguin: 0,
+        bilieux: 0,
+        mélancolique: 0,
+        flegmatique: 0
+      };
+
+      answers.forEach((a, i) => {
+        if (["1", "6"].includes((i+1).toString())) count.sanguin += a === 'oui' ? 1 : 0;
+        if (["2", "4", "5"].includes((i+1).toString())) count.bilieux += a === 'oui' ? 1 : 0;
+        if (["7", "8", "12"].includes((i+1).toString())) count.mélancolique += a === 'oui' ? 1 : 0;
+        if (["9", "10", "13", "14", "15"].includes((i+1).toString())) count.flegmatique += a === 'oui' ? 1 : 0;
+      });
+
+      const sorted = Object.entries(count).sort((a, b) => b[1] - a[1]);
+      const dominant = sorted[0][0];
+
+      const resultText = `Votre tempérament dominant est : ${dominant.toUpperCase()}`;
+      document.getElementById("resultText").innerText = resultText;
+    }
+
+    document.getElementById("languageSwitch").addEventListener("click", function () {
+      currentLanguage = currentLanguage === 'fr' ? 'mg' : 'fr';
+      questions = currentLanguage === 'fr' ? questionsFr : questionsMg;
+      current = 0;
+      answers.length = 0;
+      createSlide(current, 1);
+      this.innerText = currentLanguage === 'fr' ? "Switch to Malagasy" : "Switch to French";
+    });
+
+    createSlide(current, 1);
+  </script>
+</body>
+</html>

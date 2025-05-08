@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Test Ayurvédique</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fefdfb;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 40px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 640px;
+      overflow: hidden;
+      position: relative;
+      border-top: 6px solid #a16207;
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #92400e;
+    }
+
+    .question {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: inline-block;
+      margin-right: 20px;
+      font-size: 15px;
+      color: #1f2937;
+    }
+
+    input[type="radio"] {
+      margin-right: 8px;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px; /* Espace plus grand entre les boutons et les questions */
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: #92400e;
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .top-return {
+      display: block;
+      margin-bottom: 20px;
+      text-decoration: none;
+      color: #92400e;
+      font-weight: bold;
+    }
+
+    .question-container {
+      display: none;
+    }
+
+    .active {
+      display: block;
+    }
+
+    #result {
+      display: none;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="module1.html" class="top-return">← Retour à l'accueil</a>
+    <h2 id="title">Test de Constitution Ayurvédique</h2>
+
+    <!-- Section des questions -->
+    <div id="questions-container"></div>
+
+    <!-- Résultats -->
+    <div id="result">
+      <h3 id="resultTitle">Résultat</h3>
+      <p id="resultText"></p>
+
+      <label for="facebook" id="facebookLabel">Votre Facebook :</label>
+      <input type="text" id="facebook" placeholder="Nom Facebook complet" />
+    </div>
+
+    <!-- Navigation -->
+    <div class="button-row">
+      <button id="prevBtn" class="btn-secondary" onclick="changeQuestion(-1)">Retour</button>
+      <button id="nextBtn" class="btn-primary" onclick="changeQuestion(1)">Suivant</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Liste des questions et réponses possibles en français et malagasy
+    const questions = [
+      { 
+        text: "Avez-vous une morphologie naturellement mince, avec des difficultés à prendre du poids ?", 
+        translation: "Manana vatana manify ianao, sarotra mahazo lanja ?", 
+        doshas: { vata: 1, pitta: 0, kapha: 0 }
+      },
+      { 
+        text: "Avez-vous souvent les mains et les pieds froids, même quand il fait chaud ?", 
+        translation: "Mbola mangatsiaka foana ny tananao sy ny tongotrao, na dia mafana aza ny andro ?", 
+        doshas: { vata: 1, pitta: 0, kapha: 0 }
+      },
+      { 
+        text: "Vous sentez-vous facilement anxieux, nerveux ou stressé ?", 
+        translation: "Mora kizitina, manahy na misalasala ve ianao ?", 
+        doshas: { vata: 1, pitta: 0, kapha: 0 }
+      },
+      { 
+        text: "Avez-vous un appétit variable, parfois fort et parfois absent ?", 
+        translation: "Manana faniriana hisakafo miovaova ve ianao, indraindray mahery na tsy misy ?", 
+        doshas: { vata: 1, pitta: 0, kapha: 0 }
+      },
+      { 
+        text: "Êtes-vous naturellement compétitif, ambitieux et facilement irrité ?", 
+        translation: "Miasa mandrakariva, miezaka foana ary mety ho mora tezitra ?", 
+        doshas: { vata: 0, pitta: 1, kapha: 0 }
+      },
+      { 
+        text: "Avez-vous tendance à avoir une digestion rapide et à ressentir la faim souvent ?", 
+        translation: "mihinana haingana ve ianao, no sady noana matetika ?", 
+        doshas: { vata: 0, pitta: 1, kapha: 0 }
+      },
+      { 
+        text: "Avez-vous la peau sensible, sujette aux rougeurs ou inflammations ?", 
+        translation: "Manana hoditra marefo sy mora marary sy mamaivay ve ianao ?", 
+        doshas: { vata: 0, pitta: 1, kapha: 0 }
+      },
+      { 
+        text: "Êtes-vous d’un tempérament calme, patient et posé ?", 
+        translation: "manana toetra milamina maharitra ve ianao ?", 
+        doshas: { vata: 0, pitta: 0, kapha: 1 }
+      },
+      { 
+        text: "Avez-vous tendance à prendre du poids facilement même avec peu de nourriture ?", 
+        translation: "Mora mahazo lanja ve ianao na dia sakafo kely fotsiny aza no nohaninao ?", 
+        doshas: { vata: 0, pitta: 0, kapha: 1 }
+      },
+      { 
+        text: "Votre digestion est-elle lente, avec une sensation de lourdeur après les repas ?", 
+        translation: "somary ela ela ve ianao vao mahalevonkanina sy mahatsapa mavesatra rehefa avy misakafo ?", 
+        doshas: { vata: 0, pitta: 0, kapha: 1 }
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    const doshaScores = { vata: 0, pitta: 0, kapha: 0 };
+    const answers = [];
+
+    const questionsContainer = document.getElementById("questions-container");
+    const resultContainer = document.getElementById("result");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    // Créer et afficher la question actuelle
+    function displayQuestion(index) {
+      const question = questions[index];
+      const questionHTML = `
+        <div class="question-container ${index === 0 ? 'active' : ''}" id="question-${index}">
+          <p><strong>Français:</strong> ${question.text}</p>
+          <p><strong>Malagasy:</strong> ${question.translation}</p>
+          <div>
+            <label><input type="radio" name="answer-${index}" value="oui"> Oui</label>
+            <label><input type="radio" name="answer-${index}" value="non"> Non</label>
+            <label><input type="radio" name="answer-${index}" value="parfois"> Parfois</label>
+          </div>
+        </div>
+      `;
+      questionsContainer.innerHTML = questions.map((_, i) => `
+        <div class="question-container ${i === index ? 'active' : ''}" id="question-${i}">
+          <p><strong>Français:</strong> ${questions[i].text}</p>
+          <p><strong>Malagasy:</strong> ${questions[i].translation}</p>
+          <div>
+            <label><input type="radio" name="answer-${i}" value="oui"> Oui</label>
+            <label><input type="radio" name="answer-${i}" value="non"> Non</label>
+            <label><input type="radio" name="answer-${i}" value="parfois"> Parfois</label>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Récupérer et mettre à jour les scores en fonction de la réponse
+    function updateScores(answer, index) {
+      const question = questions[index];
+      const scores = question.doshas;
+
+      if (answer === "oui") {
+        doshaScores.vata += scores.vata;
+        doshaScores.pitta += scores.pitta;
+        doshaScores.kapha += scores.kapha;
+      } else if (answer === "parfois") {
+        doshaScores.vata += scores.vata * 0.5;
+        doshaScores.pitta += scores.pitta * 0.5;
+        doshaScores.kapha += scores.kapha * 0.5;
+      }
+    }
+
+    // Fonction pour passer à la question suivante ou précédente
+    function changeQuestion(direction) {
+      const selected = document.querySelector(`input[name="answer-${currentQuestionIndex}"]:checked`);
+      if (!selected) {
+        alert("Veuillez choisir une réponse.");
+        return;
+      }
+
+      answers[currentQuestionIndex] = selected.value;
+      updateScores(answers[currentQuestionIndex], currentQuestionIndex);
+
+      currentQuestionIndex += direction;
+
+      if (currentQuestionIndex >= questions.length) {
+        showResult();
+      } else {
+        displayQuestion(currentQuestionIndex);
+      }
+
+      prevBtn.style.display = currentQuestionIndex === 0 ? 'none' : 'inline-block';
+      nextBtn.innerText = currentQuestionIndex === questions.length - 1 ? 'Voir le résultat' : 'Suivant';
+    }
+
+    // Affichage du résultat final
+    function showResult() {
+      questionsContainer.style.display = "none";
+      prevBtn.style.display = "none";
+      nextBtn.style.display = "none";
+      resultContainer.style.display = "block";
+
+      let dominantDosha = "";
+      let highestScore = 0;
+
+      for (const dosha in doshaScores) {
+        if (doshaScores[dosha] > highestScore) {
+          highestScore = doshaScores[dosha];
+          dominantDosha = dosha;
+        }
+      }
+
+      document.getElementById("resultText").innerText = `Votre dosha dominant est : ${dominantDosha.toUpperCase()}`;
+    }
+
+    // Initialisation
+    displayQuestion(currentQuestionIndex);
+  </script>
+</body>
+</html>

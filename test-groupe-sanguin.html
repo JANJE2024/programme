@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Test Groupe Sanguin</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 40px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 640px;
+      overflow: hidden;
+      position: relative;
+      border-top: 6px solid #991b1b;
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #991b1b;
+    }
+
+    p {
+      font-size: 16px;
+      color: #374151;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0;
+      font-size: 15px;
+      color: #1f2937;
+    }
+
+    input[type="radio"] {
+      margin-right: 8px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: #991b1b;
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .top-return {
+      display: block;
+      margin-bottom: 20px;
+      text-decoration: none;
+      color: #991b1b;
+      font-weight: bold;
+    }
+
+    .question-slide {
+      position: relative;
+      height: 150px;
+      overflow: hidden;
+    }
+
+    .slide-question {
+      position: absolute;
+      width: 100%;
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .slide-in-left {
+      transform: translateX(-100%);
+      opacity: 1;
+    }
+
+    .slide-in-right {
+      transform: translateX(100%);
+      opacity: 1;
+    }
+
+    .active {
+      transform: translateX(0);
+      opacity: 1;
+      z-index: 2;
+    }
+
+    #result {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #lang-select {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="module1.html" class="top-return">← Retour à l'accueil</a>
+    <h2>Test de groupe sanguin</h2>
+
+    <select id="lang-select">
+      <option value="fr">Français</option>
+      <option value="mg">Malagasy</option>
+    </select>
+
+    <div class="question-slide" id="question-slide"></div>
+
+    <div class="button-row" id="navigation-buttons">
+      <button id="prevBtn" class="btn-secondary" onclick="changeQuestion(-1)">Retour</button>
+      <button id="nextBtn" class="btn-primary" onclick="changeQuestion(1)">Suivant</button>
+    </div>
+
+    <div id="result">
+      <h3>Résultat</h3>
+      <p id="resultText"></p>
+
+      <label for="facebook">Anaran'ny Facebook-nao :</label>
+      <input type="text" id="facebook" placeholder="Nom Facebook complet" />
+
+      <p style="margin-top: 10px; font-weight: bold;">Captureo ity valiny ity dia alefaso ao am Joela.</p>
+    </div>
+  </div>
+
+  <script>
+    const questionsFR = [
+      "1. Avez-vous des difficultés digestives après avoir consommé des produits laitiers ?",
+      "2. Vous sentez-vous mieux en consommant de la viande rouge plutôt que du poulet ou du poisson ?",
+      "3. Avez-vous une forte résistance au stress physique ou mental ?",
+      "4. Tombez-vous facilement malade lorsque vous êtes soumis à un rythme de vie désorganisé ?",
+      "5. Votre énergie est-elle plus stable lorsque vous consommez des aliments riches en protéines ?",
+      "6. Réagissez-vous négativement au blé ou au gluten ?",
+      "7. Votre appétit est-il affecté par des repas riches en glucides (pâtes, riz) ?",
+      "8. Avez-vous tendance à prendre du poids facilement en cas d’alimentation riche en féculents ?",
+      "9. Avez-vous des douleurs articulaires ou musculaires récurrentes sans cause apparente ?",
+      "10. Dormez-vous mieux lorsque vous mangez léger le soir ?",
+      "11. Êtes-vous sujet à des problèmes de coagulation ou à des saignements prolongés ?",
+      "12. Avez-vous des intolérances alimentaires fréquentes ?",
+      "13. Êtes-vous plus sensible aux infections virales ou respiratoires ?",
+      "14. Avez-vous souvent froid, même dans un environnement modérément frais ?",
+      "15. Vous sentez-vous mieux mentalement et physiquement après avoir consommé des légumes verts et des protéines maigres ?"
+    ];
+
+    const questionsMG = [
+      "1. Manana olana amin’ny fandevonan-kanina ve ianao rehefa misotro ronono na mihinana fromazy ?",
+      "2. Mahatsiaro ho mahazo aina kokoa ve ianao rehefa mihinana hena mena noho ny akoho na trondro ?",
+      "3. Mahazaka adin-tsaina ara-batana sy ara-tsaina ve ianao ?",
+      "4. Mora marary ve ianao rehefa tsy voalamina tsara ny fiainanao ?",
+      "5. Maharitra ve ny herinao rehefa mihinana sakafo be protéine ?",
+      "6. Tsy mety loatra aminao ve ny karazana sakafo be lafarinina  ?",
+      "7. Misy fiantraikany amin’ny fahazotoan-komana ve ny sakafo be glucide (pasta, vary) ?",
+      "8. Mora matavy ve ianao rehefa mihinana sakafo be féculents (lafarinina...) ?",
+      "9. Manana fanaintainana amin’ny hozatra na tonon-taolana tsy misy antony mazava ve ianao ?",
+      "10. Mora matory ve ianao rehefa mihinana maivana amin’ny hariva ?",
+      "11. Manana olana amin’ny rà na mandriaka ela ve ianao rehefa misy ratra ?",
+      "12. Manana allergie ratsy amin'ny sakafo sasany ve ianao ?",
+      "13. Mora tratran’ny virus na aretin’ny taovam-pisefoana ve ianao ?",
+      "14. Mahatsiaro mangatsiaka foana ve ianao na dia amin’ny toetr’andro antonony aza ?",
+      "15. Mahatsiaro ho tsara kokoa ara-tsaina sy ara-batana ve ianao rehefa mihinana anana sy protéine maivana ?"
+    ];
+
+    let current = 0;
+    const answers = [];
+    let lang = "fr";
+
+    const slideContainer = document.getElementById("question-slide");
+    const langSelect = document.getElementById("lang-select");
+
+    langSelect.addEventListener("change", () => {
+      lang = langSelect.value;
+      createSlide(current, 1);
+    });
+
+    function getCurrentQuestions() {
+      return lang === "fr" ? questionsFR : questionsMG;
+    }
+
+    function createSlide(index, direction) {
+      const questionList = getCurrentQuestions();
+      const question = document.createElement("div");
+      question.className = "slide-question";
+      question.innerHTML = `
+        <p>${questionList[index]}</p>
+        <label><input type="radio" name="answer" value="oui"> Oui</label>
+        <label><input type="radio" name="answer" value="non"> Non</label>
+        <label><input type="radio" name="answer" value="parfois"> Parfois</label>
+      `;
+
+      if (direction === 1) {
+        question.classList.add("slide-in-right");
+      } else if (direction === -1) {
+        question.classList.add("slide-in-left");
+      }
+
+      slideContainer.innerHTML = '';
+      slideContainer.appendChild(question);
+
+      const prevAnswer = answers[index];
+      if (prevAnswer) {
+        setTimeout(() => {
+          const input = question.querySelector(`input[value="${prevAnswer}"]`);
+          if (input) input.checked = true;
+        }, 50);
+      }
+
+      setTimeout(() => {
+        question.classList.remove("slide-in-left", "slide-in-right");
+        question.classList.add("active");
+      }, 20);
+
+      updateButtons();
+    }
+
+    function changeQuestion(direction) {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      if (direction === 1 && !selected) {
+        alert(lang === "fr" ? "Veuillez choisir une réponse." : "Mifidiana valiny azafady.");
+        return;
+      }
+
+      if (direction === 1) answers[current] = selected.value;
+      current += direction;
+
+      if (current >= getCurrentQuestions().length) {
+        showResult();
+      } else {
+        createSlide(current, direction);
+      }
+    }
+
+    function updateButtons() {
+      document.getElementById('prevBtn').style.display = current === 0 ? 'none' : 'inline-block';
+      document.getElementById('nextBtn').innerText = current === getCurrentQuestions().length - 1
+        ? (lang === "fr" ? "Voir le résultat" : "Hijery vokatra")
+        : (lang === "fr" ? "Suivant" : "Manaraka");
+    }
+
+    function showResult() {
+      document.getElementById("question-slide").style.display = "none";
+      document.getElementById("navigation-buttons").style.display = "none";
+      document.getElementById("result").style.display = "block";
+
+      const ouiCount = answers.filter(a => a === 'oui').length;
+      let resultText = "";
+
+      if (ouiCount >= 10) {
+        resultText = lang === "fr"
+          ? "Vous avez un profil compatible avec le groupe sanguin O."
+          : "Mety ho manana mombamomba mifanaraka amin’ny groupe O ianao.";
+      } else if (ouiCount >= 5) {
+        resultText = lang === "fr"
+          ? "Vous avez un profil proche du groupe A ou AB."
+          : "Mety ho akaiky amin’ny groupe A na AB ny mombamomba anao.";
+      } else {
+        resultText = lang === "fr"
+          ? "Vous avez un profil compatible avec le groupe B."
+          : "Mety ho manana mombamomba mifanaraka amin’ny groupe B ianao.";
+      }
+
+      document.getElementById("resultText").innerText = resultText;
+    }
+
+    // Lancement
+    createSlide(current, 1);
+  </script>
+</body>
+</html>
